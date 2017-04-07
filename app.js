@@ -17,6 +17,10 @@ app.get('/adventures', function(req, res){
         
         res.render('adventures', {adventures: adventures});
 });
+
+app.post('/adventures', function(req, res){
+    res.send('You hit POST ROUTE');
+})
     
 app.listen(process.env.PORT, process.env.IP, function(){
     console.log('AdventureCamp Has Started!');
