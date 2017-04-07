@@ -1,0 +1,8 @@
+<h1>This is the adventures page!</h1>
+
+<% adventures.forEach(function(adventure){ %>
+    <div>
+        <h4><%= adventure.name %></h4>
+        <img src="<%= adventure.image %>">
+    </div>
+<% }); %>
