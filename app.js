@@ -10,24 +10,26 @@ app.set('view engine', 'ejs');
 // SCHEMA SETUP
 var adventureSchema = new mongoose.Schema({
     name: String,
-    image: String
+    image: String,
+    description: String
 });
 
 var Adventure = mongoose.model('Adventure', adventureSchema);
 
-// Adventure.create(
-//     {
-//         name: 'Snowboarding', 
-//         image: 'https://source.unsplash.com/pOwhy6PDorE/400X300'
+Adventure.create(
+    {
+        name: 'Snowboarding', 
+        image: 'https://source.unsplash.com/pOwhy6PDorE/400X300',
+        description: 'Come join us in Utah for some of the best powder in the US!'
         
-//     }, function(err, adventure){
-//         if (err) {
-//             console.log(err);
-//         } else {
-//             console.log('NEWLY CREATED ADVENTURE');
-//             console.log(adventure);
-//         }
-//     });
+    }, function(err, adventure){
+        if (err) {
+            console.log(err);
+        } else {
+            console.log('NEWLY CREATED ADVENTURE');
+            console.log(adventure);
+        }
+    });
     
 app.get('/', function(req, res){
     res.render('landing');
@@ -62,6 +64,12 @@ app.post('/adventures', function(req, res){
 app.get('/adventures/new', function(req, res) {
     res.render('new.ejs');
 });
+
+app.get('/adventures/:id', function(req, res) {
+    //find adventure with ID
+    //render show template with that adventure
+    res.send('THIS WILL BE SHOW PAGE');
+})
     
 app.listen(process.env.PORT, process.env.IP, function(){
     console.log('LivinAdventures Has Started!');
