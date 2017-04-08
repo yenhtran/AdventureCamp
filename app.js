@@ -1,35 +1,62 @@
 var express = require('express'),
     app = express(),
-    bodyParser = require('body-parser');
+    bodyParser = require('body-parser'),
+    mongoose = require('mongoose'); 
     
+mongoose.connect('mongodb://localhost/livin_adventures');
 app.use(bodyParser.urlencoded({extended: true}));    
 app.set('view engine', 'ejs');
 
-var adventures = [
-            {name: 'Surfing', image: 'https://source.unsplash.com/L5aI2jU0i50/400X300'},
-            {name: 'Snowboarding', image: 'https://source.unsplash.com/pOwhy6PDorE/400X300'},
-            {name: 'Rock Climbing', image: 'https://source.unsplash.com/uJfwRhfgSnw/400X300'},
-            {name: 'Hiking', image: 'https://source.unsplash.com/rHv6C-WTOls/400X300'},
-            {name: 'Camping', image: 'https://source.unsplash.com/ilkTnuMunP8/400X300'},
-            {name: 'Napping', image: 'https://source.unsplash.com/t8SxccV0Agw/400X300'},
-            {name: 'Diving', image: 'https://source.unsplash.com/6vjJZYYIiBw/400X300'}
-        ]
+// SCHEMA SETUP
+var adventureSchema = new mongoose.Schema({
+    name: String,
+    image: String
+});
+
+var Adventure = mongoose.model('Adventure', adventureSchema);
+
+// Adventure.create(
+//     {
+//         name: 'Snowboarding', 
+//         image: 'https://source.unsplash.com/pOwhy6PDorE/400X300'
+        
+//     }, function(err, adventure){
+//         if (err) {
+//             console.log(err);
+//         } else {
+//             console.log('NEWLY CREATED ADVENTURE');
+//             console.log(adventure);
+//         }
+//     });
     
 app.get('/', function(req, res){
     res.render('landing');
 });
 
 app.get('/adventures', function(req, res){
-        res.render('adventures', {adventures: adventures});
+    //get all adventures from DB
+    Adventure.find({}, function(err, alladventures) {
+        if(err){
+            console.log(err);
+        } else {
+            res.render('adventures', {adventures: alladventures})
+        }
+    });
+    //res.render('adventures', {adventures: adventures});
 });
 
 app.post('/adventures', function(req, res){
     var name = req.body.name,
         image = req.body.image,
         newAdventure = {name: name, image: image};
-        
-    adventures.push(newAdventure);
-    res.redirect('/adventures');
+
+    Adventure.create(newAdventure, function(err, newlyCreated){
+        if(err){
+            console.log(err);
+        } else {
+            res.redirect('/adventures');
+        }
+    });
 });
 
 app.get('/adventures/new', function(req, res) {
@@ -37,5 +64,5 @@ app.get('/adventures/new', function(req, res) {
 });
     
 app.listen(process.env.PORT, process.env.IP, function(){
-    console.log('AdventureCamp Has Started!');
+    console.log('LivinAdventures Has Started!');
 });
