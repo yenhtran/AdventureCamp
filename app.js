@@ -16,41 +16,40 @@ var adventureSchema = new mongoose.Schema({
 
 var Adventure = mongoose.model('Adventure', adventureSchema);
 
-Adventure.create(
-    {
-        name: 'Snowboarding', 
-        image: 'https://source.unsplash.com/pOwhy6PDorE/400X300',
-        description: 'Come join us in Utah for some of the best powder in the US!'
+// Adventure.create(
+//     {
+//         name: 'Snowboarding', 
+//         image: 'https://source.unsplash.com/pOwhy6PDorE/400X300',
+//         description: 'Come join us in Utah for some of the best powder in the US!'
         
-    }, function(err, adventure){
-        if (err) {
-            console.log(err);
-        } else {
-            console.log('NEWLY CREATED ADVENTURE');
-            console.log(adventure);
-        }
-    });
+//     }, function(err, adventure){
+//         if (err) {
+//             console.log(err);
+//         } else {
+//             console.log('NEWLY CREATED ADVENTURE');
+//             console.log(adventure);
+//         }
+//     });
     
 app.get('/', function(req, res){
     res.render('landing');
 });
 
 app.get('/adventures', function(req, res){
-    //get all adventures from DB
     Adventure.find({}, function(err, alladventures) {
         if(err){
             console.log(err);
         } else {
-            res.render('adventures', {adventures: alladventures})
+            res.render('index', {adventures: alladventures})
         }
     });
-    //res.render('adventures', {adventures: adventures});
 });
 
 app.post('/adventures', function(req, res){
     var name = req.body.name,
         image = req.body.image,
-        newAdventure = {name: name, image: image};
+        description = req.body.description,
+        newAdventure = {name: name, image: image, description: description};
 
     Adventure.create(newAdventure, function(err, newlyCreated){
         if(err){
@@ -65,10 +64,16 @@ app.get('/adventures/new', function(req, res) {
     res.render('new.ejs');
 });
 
+//SHOW - shows more info about specific adventure
 app.get('/adventures/:id', function(req, res) {
     //find adventure with ID
-    //render show template with that adventure
-    res.send('THIS WILL BE SHOW PAGE');
+    Adventure.findById(req.params.id, function(err, foundAdventure){
+       if(err){
+           console.log(err);
+       } else {
+           res.render('show', {adventure: foundAdventure});
+       }
+    });
 })
     
 app.listen(process.env.PORT, process.env.IP, function(){
