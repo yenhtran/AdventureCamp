@@ -1,20 +1,14 @@
 var express = require('express'),
     app = express(),
     bodyParser = require('body-parser'),
-    mongoose = require('mongoose'); 
+    mongoose = require('mongoose'),
+    Adventure = require('./models/adventure');
     
 mongoose.connect('mongodb://localhost/livin_adventures');
 app.use(bodyParser.urlencoded({extended: true}));    
 app.set('view engine', 'ejs');
 
-// SCHEMA SETUP
-var adventureSchema = new mongoose.Schema({
-    name: String,
-    image: String,
-    description: String
-});
 
-var Adventure = mongoose.model('Adventure', adventureSchema);
 
 // Adventure.create(
 //     {
