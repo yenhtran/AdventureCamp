@@ -1,6 +1,6 @@
 var mongoose = require('mongoose'),
     Adventure = require('./models/adventure'),
-    Comment = require('/.models/comment');
+    Comment = require('./models/comment');
     
 var data = [
     {

@@ -10,23 +10,6 @@ mongoose.connect('mongodb://localhost/livin_adventures');
 app.use(bodyParser.urlencoded({extended: true}));    
 app.set('view engine', 'ejs');
 
-
-
-// Adventure.create(
-//     {
-//         name: 'Snowboarding', 
-//         image: 'https://source.unsplash.com/pOwhy6PDorE/400X300',
-//         description: 'Come join us in Utah for some of the best powder in the US!'
-        
-//     }, function(err, adventure){
-//         if (err) {
-//             console.log(err);
-//         } else {
-//             console.log('NEWLY CREATED ADVENTURE');
-//             console.log(adventure);
-//         }
-//     });
-    
 app.get('/', function(req, res){
     res.render('landing');
 });
@@ -63,10 +46,11 @@ app.get('/adventures/new', function(req, res) {
 //SHOW - shows more info about specific adventure
 app.get('/adventures/:id', function(req, res) {
     //find adventure with ID
-    Adventure.findById(req.params.id, function(err, foundAdventure){
+    Adventure.findById(req.params.id).populate('comments').exec(function(err, foundAdventure){
        if(err){
            console.log(err);
        } else {
+           console.log(foundAdventure);
            res.render('show', {adventure: foundAdventure});
        }
     });
