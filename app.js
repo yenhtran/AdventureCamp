@@ -2,8 +2,10 @@ var express = require('express'),
     app = express(),
     bodyParser = require('body-parser'),
     mongoose = require('mongoose'),
-    Adventure = require('./models/adventure');
+    Adventure = require('./models/adventure'),
+    seedDB = require('./seeds');
     
+seedDB();    
 mongoose.connect('mongodb://localhost/livin_adventures');
 app.use(bodyParser.urlencoded({extended: true}));    
 app.set('view engine', 'ejs');
