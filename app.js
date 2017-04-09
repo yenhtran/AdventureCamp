@@ -19,7 +19,7 @@ app.get('/adventures', function(req, res){
         if(err){
             console.log(err);
         } else {
-            res.render('index', {adventures: alladventures})
+            res.render('adventures/index', {adventures: alladventures})
         }
     });
 });
@@ -40,7 +40,7 @@ app.post('/adventures', function(req, res){
 });
 
 app.get('/adventures/new', function(req, res) {
-    res.render('new.ejs');
+    res.render('adventures/new.ejs');
 });
 
 //SHOW - shows more info about specific adventure
@@ -51,9 +51,24 @@ app.get('/adventures/:id', function(req, res) {
            console.log(err);
        } else {
            console.log(foundAdventure);
-           res.render('show', {adventure: foundAdventure});
+           res.render('adventures/show', {adventure: foundAdventure});
        }
     });
+});
+
+//================
+// COMMENTS ROUTES
+//================
+
+app.get('/adventures/:id/comments/new', function(req, res) {
+    //find adventure by id
+    Adventure.findById(req.params.id, function(err, adventure){
+        if(err){
+            console.log(err);
+        } else {
+            res.render('comments/new',{adventure: adventure});
+        }
+    })
 })
     
 app.listen(process.env.PORT, process.env.IP, function(){
