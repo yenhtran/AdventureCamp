@@ -3,6 +3,7 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     mongoose = require('mongoose'),
     Adventure = require('./models/adventure'),
+    Comment = require('./models/comment'),
     seedDB = require('./seeds');
     
 seedDB();    
@@ -69,6 +70,31 @@ app.get('/adventures/:id/comments/new', function(req, res) {
             res.render('comments/new',{adventure: adventure});
         }
     })
+});
+
+app.post('/adventures/:id/comments', function(req, res){
+    //look up adventures using ID
+    //create new comment
+    //connect new comment to new adventures
+    //redirect to adventure show page
+    Adventure.findById(req.params.id, function(err, adventure) {
+        if (err) {
+            console.log(err);
+            res.redirect('/adventures');
+        } else {
+            console.log(req.body.comment);
+            Comment.create(req.body.comment, function(err, comment){
+                if(err){
+                    console.log(err);
+                } else {
+                    adventure.comments.push(comment);
+                    adventure.save();
+                    res.redirect('/adventures/' + adventure._id);
+                }
+            })
+        }
+    })
+    
 })
     
 app.listen(process.env.PORT, process.env.IP, function(){

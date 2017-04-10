@@ -5,6 +5,10 @@
 <img src='<%= adventure.image %>'>
 <p><%= adventure.description %></p>
 
+<p>
+    <a class='btn btn-success' href='/adventures/<%= adventure._id %>/comments/new'>Add New Comment</a>
+</p>
+
 <% adventure.comments.forEach(function(comment) { %>
     <p>
         <strong><%= comment.author %></strong> - <%= comment.text %>
