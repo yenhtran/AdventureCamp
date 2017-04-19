@@ -51,6 +51,39 @@ router.get('/:id', function(req, res) {
     });
 });
 
+//EDIT ADVENTURE ROUTES
+router.get('/:id/edit', function(req, res) {
+    Adventure.findById(req.params.id, function(err, foundAdventure){
+        if(err){
+            res.redirect('/adventures')
+        } else {
+            res.render('adventures/edit', {adventure: foundAdventure});
+        }
+    });
+});
+
+//UPDATE ADVENTURE ROUTES
+router.put('/:id', function(req, res) {
+    Adventure.findByIdAndUpdate(req.params.id, req.body.adventure, function(err, updatedAdventure) {
+        if(err){
+            res.redirect('/adventures');
+        } else {
+            res.redirect('/adventures/' + req.params.id);
+        }
+    })
+});
+
+//DESTROY ADVENTURE ROUTE
+router.delete('/:id', function(req, res){
+    Adventure.findByIdAndRemove(req.params.id, function(err){
+        if (err) {
+            res.redirect('/adventures');
+        } else {
+            res.redirect('/adventures');
+        }
+    });
+});
+
 //Middleware
 function isLoggedIn(req, res, next) {
     if(req.isAuthenticated()){

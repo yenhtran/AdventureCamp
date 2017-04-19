@@ -4,6 +4,7 @@ var express = require('express'),
     mongoose = require('mongoose'),
     passport = require('passport'),
     LocalStrategy = require('passport-local'),
+    methodOverride = require('method-override'),
     Adventure = require('./models/adventure'),
     Comment = require('./models/comment'),
     User = require('./models/user'),
@@ -19,6 +20,8 @@ mongoose.connect('mongodb://localhost/livin_adventures');
 app.use(bodyParser.urlencoded({extended: true}));    
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
+//methodOverride is used for edit adventures
+app.use(methodOverride('_method'));
 // seedDB(); //seed the database
 
 // PASSPORT CONFIGURATION
