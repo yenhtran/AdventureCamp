@@ -9,6 +9,11 @@ var express = require('express'),
     User = require('./models/user'),
     seedDB = require('./seeds');
     
+//requiring routes
+var commentRoutes = require('./routes/comments'),
+    adventureRoutes = require('./routes/adventures'),
+    indexRoutes = require('./routes/index');
+    
     
 mongoose.connect('mongodb://localhost/livin_adventures');
 app.use(bodyParser.urlencoded({extended: true}));    
@@ -35,145 +40,9 @@ app.use(function(req, res, next){
     next();
 })
 
-//================
-// ROUTES
-//================
-
-app.get('/', function(req, res){
-    res.render('landing');
-});
-
-app.get('/adventures', function(req, res){
-    Adventure.find({}, function(err, alladventures) {
-        if(err){
-            console.log(err);
-        } else {
-            res.render('adventures/index', {adventures: alladventures})
-        }
-    });
-});
-
-app.post('/adventures', function(req, res){
-    var name = req.body.name,
-        image = req.body.image,
-        description = req.body.description,
-        newAdventure = {name: name, image: image, description: description};
-
-    Adventure.create(newAdventure, function(err, newlyCreated){
-        if(err){
-            console.log(err);
-        } else {
-            res.redirect('/adventures');
-        }
-    });
-});
-
-app.get('/adventures/new', function(req, res) {
-    res.render('adventures/new.ejs');
-});
-
-//SHOW - shows more info about specific adventure
-app.get('/adventures/:id', function(req, res) {
-    //find adventure with ID
-    Adventure.findById(req.params.id).populate('comments').exec(function(err, foundAdventure){
-       if(err){
-           console.log(err);
-       } else {
-           console.log(foundAdventure);
-           res.render('adventures/show', {adventure: foundAdventure});
-       }
-    });
-});
-
-//================
-// COMMENTS ROUTES
-//================
-
-app.get('/adventures/:id/comments/new', isLoggedIn, function(req, res) {
-    //find adventure by id
-    Adventure.findById(req.params.id, function(err, adventure){
-        if(err){
-            console.log(err);
-        } else {
-            res.render('comments/new',{adventure: adventure});
-        }
-    })
-});
-
-app.post('/adventures/:id/comments', isLoggedIn, function(req, res){
-    //look up adventures using ID
-    //create new comment
-    //connect new comment to new adventures
-    //redirect to adventure show page
-    Adventure.findById(req.params.id, function(err, adventure) {
-        if (err) {
-            console.log(err);
-            res.redirect('/adventures');
-        } else {
-            console.log(req.body.comment);
-            Comment.create(req.body.comment, function(err, comment){
-                if(err){
-                    console.log(err);
-                } else {
-                    adventure.comments.push(comment);
-                    adventure.save();
-                    res.redirect('/adventures/' + adventure._id);
-                }
-            })
-        }
-    })
-    
-});
-
-//================
-// AUTH ROUTES
-//================
-
-//shows register form
-app.get('/register', function(req, res) {
-    res.render('register');
-});
-
-//handle sign up logic
-app.post('/register', function(req, res) {
-    var newUser = new User({username: req.body.username});
-    User.register(newUser, req.body.password, function(err, user){
-        if(err){
-            console.log(err);
-            return res.render('register');
-        }
-        passport.authenticate('local')(req, res, function(){
-            res.redirect('/adventures');
-        });
-    });
-});
-
-//show login form
-app.get('/login', function(req, res) {
-    res.render('login');
-});
-//handeling login logic
-app.post('/login', passport.authenticate('local', 
-    {   
-        successRedirect: '/adventures',
-        failureRedirect: '/login'
-    }), function(req, res) {
-        
-});
-
-//logout route
-app.get('/logout', function(req, res) {
-    req.logout();
-    res.redirect('/adventures');
-});
-
-
-function isLoggedIn(req, res, next) {
-    if(req.isAuthenticated()){
-        return next();
-    }
-    res.redirect('/login');
-}
+app.use('/', indexRoutes);
+app.use('/adventures/:id/comments', commentRoutes);
+app.use('/adventures', adventureRoutes);
     
 app.listen(process.env.PORT, process.env.IP, function(){
     console.log('LivinAdventures Has Started!');
