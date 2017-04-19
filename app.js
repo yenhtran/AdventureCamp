@@ -28,6 +28,13 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+//Middleware to make available the current user in the navbar. 
+//Called on every route
+app.use(function(req, res, next){
+    res.locals.currentUser = req.user;
+    next();
+})
+
 //================
 // ROUTES
 //================
