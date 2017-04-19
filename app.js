@@ -82,7 +82,7 @@ app.get('/adventures/:id', function(req, res) {
 // COMMENTS ROUTES
 //================
 
-app.get('/adventures/:id/comments/new', function(req, res) {
+app.get('/adventures/:id/comments/new', isLoggedIn, function(req, res) {
     //find adventure by id
     Adventure.findById(req.params.id, function(err, adventure){
         if(err){
@@ -93,7 +93,7 @@ app.get('/adventures/:id/comments/new', function(req, res) {
     })
 });
 
-app.post('/adventures/:id/comments', function(req, res){
+app.post('/adventures/:id/comments', isLoggedIn, function(req, res){
     //look up adventures using ID
     //create new comment
     //connect new comment to new adventures
@@ -140,6 +140,33 @@ app.post('/register', function(req, res) {
         });
     });
 });
+
+//show login form
+app.get('/login', function(req, res) {
+    res.render('login');
+});
+//handeling login logic
+app.post('/login', passport.authenticate('local', 
+    {   
+        successRedirect: '/adventures',
+        failureRedirect: '/login'
+    }), function(req, res) {
+        
+});
+
+//logout route
+app.get('/logout', function(req, res) {
+    req.logout();
+    res.redirect('/adventures');
+});
+
+
+function isLoggedIn(req, res, next) {
+    if(req.isAuthenticated()){
+        return next();
+    }
+    res.redirect('/login');
+}
     
 app.listen(process.env.PORT, process.env.IP, function(){
     console.log('LivinAdventures Has Started!');
