@@ -17,20 +17,21 @@ router.get('/new', isLoggedIn, function(req, res) {
 
 //Comments Create
 router.post('/', isLoggedIn, function(req, res){
-    //look up adventures using ID
-    //create new comment
-    //connect new comment to new adventures
-    //redirect to adventure show page
+
     Adventure.findById(req.params.id, function(err, adventure) {
         if (err) {
             console.log(err);
             res.redirect('/adventures');
         } else {
-            console.log(req.body.comment);
             Comment.create(req.body.comment, function(err, comment){
                 if(err){
                     console.log(err);
                 } else {
+                    //add username and id to comment
+                    comment.author.id = req.user._id;
+                    comment.author.username = req.user.username;
+                    //save comment
+                    comment.save();
                     adventure.comments.push(comment);
                     adventure.save();
                     res.redirect('/adventures/' + adventure._id);
