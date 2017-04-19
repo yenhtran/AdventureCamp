@@ -14,12 +14,16 @@ router.get('/', function(req, res){
 });
 
 //CREATE - add new adventure to DB
-router.post('/', function(req, res){
+router.post('/', isLoggedIn, function(req, res){
     var name = req.body.name,
         image = req.body.image,
         description = req.body.description,
-        newAdventure = {name: name, image: image, description: description};
-
+        author = {
+            id: req.user._id,
+            username: req.user.username
+        },
+        newAdventure = {name: name, image: image, description: description, author: author};
+        
     Adventure.create(newAdventure, function(err, newlyCreated){
         if(err){
             console.log(err);
@@ -30,7 +34,7 @@ router.post('/', function(req, res){
 });
 
 //NEW - show form to create new adventure
-router.get('/new', function(req, res) {
+router.get('/new', isLoggedIn, function(req, res) {
     res.render('adventures/new.ejs');
 });
 
@@ -47,6 +51,7 @@ router.get('/:id', function(req, res) {
     });
 });
 
+//Middleware
 function isLoggedIn(req, res, next) {
     if(req.isAuthenticated()){
         return next();
