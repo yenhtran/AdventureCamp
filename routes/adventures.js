@@ -60,7 +60,7 @@ router.get('/:id/edit', checkAdventureOwnership, function(req, res) {
 });
 
 //UPDATE ADVENTURE ROUTES
-router.put('/:id', function(req, res) {
+router.put('/:id', checkAdventureOwnership, function(req, res) {
     Adventure.findByIdAndUpdate(req.params.id, req.body.adventure, function(err, updatedAdventure) {
         if(err){
             res.redirect('/adventures');
@@ -71,7 +71,7 @@ router.put('/:id', function(req, res) {
 });
 
 //DESTROY ADVENTURE ROUTE
-router.delete('/:id', function(req, res){
+router.delete('/:id', checkAdventureOwnership, function(req, res){
     Adventure.findByIdAndRemove(req.params.id, function(err){
         if (err) {
             res.redirect('/adventures');
