@@ -56,6 +56,9 @@ router.get('/:id', function(req, res) {
 router.get('/:id/edit', middleware.checkAdventureOwnership, function(req, res) {
     //is user logged in?
     Adventure.findById(req.params.id, function(err, foundAdventure){
+        if(err){
+            req.flash('error', 'Adventure not found');
+        }
         res.render('adventures/edit', {adventure: foundAdventure});
     });
 });
