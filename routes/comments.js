@@ -38,8 +38,31 @@ router.post('/', isLoggedIn, function(req, res){
                 }
             })
         }
-    })
+    });
     
+});
+
+//COMMENTS EDIT ROUTE
+router.get('/:comment_id/edit', function(req, res){
+    Comment.findById(req.params.comment_id, function(err, foundComment) {
+        if(err){
+            res.redirect('back');
+        } else {
+          res.render('comments/edit', { adventure_id: req.params.id, comment: foundComment});  
+        }
+    });
+    
+});
+
+//COMMENT UPDATE ROUTE
+router.put('/:comment_id', function(req, res) {
+    Comment.findByIdAndUpdate(req.params.comment_id, req.body.comment, function(err, updatedComment) {
+        if(err){
+            res.redirect('back');
+        } else {
+            res.redirect('/adventures/' + req.params.id );
+        }
+    })
 });
 
 //Middleware
