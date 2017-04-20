@@ -52,13 +52,10 @@ router.get('/:id', function(req, res) {
 });
 
 //EDIT ADVENTURE ROUTES
-router.get('/:id/edit', function(req, res) {
+router.get('/:id/edit', checkAdventureOwnership, function(req, res) {
+    //is user logged in?
     Adventure.findById(req.params.id, function(err, foundAdventure){
-        if(err){
-            res.redirect('/adventures')
-        } else {
-            res.render('adventures/edit', {adventure: foundAdventure});
-        }
+        res.render('adventures/edit', {adventure: foundAdventure});
     });
 });
 
@@ -90,6 +87,26 @@ function isLoggedIn(req, res, next) {
         return next();
     }
     res.redirect('/login');
+}
+
+function checkAdventureOwnership(req, res, next) {
+    if (req.isAuthenticated()) {
+        Adventure.findById(req.params.id, function(err, foundAdventure){
+            if(err){
+                res.redirect('back')
+            } else {
+                // does user own the adventure?
+                // .equals is given to us by mongoose
+                if(foundAdventure.author.id.equals(req.user._id)) {
+                    next();
+                } else {
+                    res.redirect('back');
+                }
+            }
+        });
+    } else {
+        res.redirect('back');
+    }
 }
 
 module.exports = router;
