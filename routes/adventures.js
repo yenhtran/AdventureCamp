@@ -1,6 +1,7 @@
 var express = require('express'),
     router = express.Router(),
-    Adventure = require('../models/adventure.js');
+    Adventure = require('../models/adventure'),
+    middleware = require('../middleware');
 
 //INDEX - show all adventures
 router.get('/', function(req, res){
@@ -14,7 +15,7 @@ router.get('/', function(req, res){
 });
 
 //CREATE - add new adventure to DB
-router.post('/', isLoggedIn, function(req, res){
+router.post('/', middleware.isLoggedIn, function(req, res){
     var name = req.body.name,
         image = req.body.image,
         description = req.body.description,
@@ -34,7 +35,7 @@ router.post('/', isLoggedIn, function(req, res){
 });
 
 //NEW - show form to create new adventure
-router.get('/new', isLoggedIn, function(req, res) {
+router.get('/new', middleware.isLoggedIn, function(req, res) {
     res.render('adventures/new.ejs');
 });
 
@@ -52,7 +53,7 @@ router.get('/:id', function(req, res) {
 });
 
 //EDIT ADVENTURE ROUTES
-router.get('/:id/edit', checkAdventureOwnership, function(req, res) {
+router.get('/:id/edit', middleware.checkAdventureOwnership, function(req, res) {
     //is user logged in?
     Adventure.findById(req.params.id, function(err, foundAdventure){
         res.render('adventures/edit', {adventure: foundAdventure});
@@ -60,7 +61,7 @@ router.get('/:id/edit', checkAdventureOwnership, function(req, res) {
 });
 
 //UPDATE ADVENTURE ROUTES
-router.put('/:id', checkAdventureOwnership, function(req, res) {
+router.put('/:id', middleware.checkAdventureOwnership, function(req, res) {
     Adventure.findByIdAndUpdate(req.params.id, req.body.adventure, function(err, updatedAdventure) {
         if(err){
             res.redirect('/adventures');
@@ -71,7 +72,7 @@ router.put('/:id', checkAdventureOwnership, function(req, res) {
 });
 
 //DESTROY ADVENTURE ROUTE
-router.delete('/:id', checkAdventureOwnership, function(req, res){
+router.delete('/:id', middleware.checkAdventureOwnership, function(req, res){
     Adventure.findByIdAndRemove(req.params.id, function(err){
         if (err) {
             res.redirect('/adventures');
@@ -80,33 +81,5 @@ router.delete('/:id', checkAdventureOwnership, function(req, res){
         }
     });
 });
-
-//Middleware
-function isLoggedIn(req, res, next) {
-    if(req.isAuthenticated()){
-        return next();
-    }
-    res.redirect('/login');
-}
-
-function checkAdventureOwnership(req, res, next) {
-    if (req.isAuthenticated()) {
-        Adventure.findById(req.params.id, function(err, foundAdventure){
-            if(err){
-                res.redirect('back')
-            } else {
-                // does user own the adventure?
-                // .equals is given to us by mongoose
-                if(foundAdventure.author.id.equals(req.user._id)) {
-                    next();
-                } else {
-                    res.redirect('back');
-                }
-            }
-        });
-    } else {
-        res.redirect('back');
-    }
-}
 
 module.exports = router;
