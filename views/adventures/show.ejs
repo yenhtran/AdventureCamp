@@ -19,7 +19,7 @@
                     <h4><a><%= adventure.name %></a></h4>
                     <p><%= adventure.description %></p>
                     <p>
-                        <em>Submitted By <%= adventure.author.username %> <%= moment(adventure.createdAt).fromNow() %></em>
+                        <em>Submitted By <%= adventure.author.username %>, <%= moment(adventure.createdAt).fromNow() %></em>
                     </p>
                     <% if(currentUser && adventure.author.id.equals(currentUser._id)) { %>
                         <a class='btn btn-xs btn-warning' href='/adventures/<%= adventure._id %>/edit'>Edit</a>
