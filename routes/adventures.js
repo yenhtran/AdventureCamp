@@ -20,7 +20,7 @@ router.get('/', function(req, res) {
 router.post('/', middleware.isLoggedIn, function(req, res) {
     var name = req.body.name,
         image = req.body.image,
-        price = req.body.price,
+        cost = req.body.cost,
         description = req.body.description,
         author = {
             id: req.user._id,
@@ -39,11 +39,12 @@ router.post('/', middleware.isLoggedIn, function(req, res) {
                 image: image,
                 description: description,
                 author: author,
-                price: price,
+                cost: cost,
                 location: location,
                 lat: lat,
                 lng: lng
             };
+            
         Adventure.create(newAdventure, function(err, newlyCreated){
             if (err) {
                 console.log(err);
@@ -67,7 +68,6 @@ router.get('/:id', function(req, res) {
         if (err) {
             console.log(err);
         } else {
-            console.log(foundAdventure);
             res.render('adventures/show', { adventure: foundAdventure });
         }
     });
@@ -86,13 +86,34 @@ router.get('/:id/edit', middleware.checkAdventureOwnership, function(req, res) {
 
 //UPDATE ADVENTURE ROUTES
 router.put('/:id', middleware.checkAdventureOwnership, function(req, res) {
-    Adventure.findByIdAndUpdate(req.params.id, req.body.adventure, function(err, updatedAdventure) {
+    geocoder.geocode(req.body.adventure.location, function (err, data) {
         if (err) {
-            res.redirect('/adventures');
-        } else {
-            res.redirect('/adventures/' + req.params.id);
+            console.log(err);
         }
-    })
+
+        var lat = data.results[0].geometry.location.lat,
+            lng = data.results[0].geometry.location.lng,
+            location = data.results[0].formatted_address,
+            newData = {
+                name: req.body.adventure.name,
+                image: req.body.adventure.image,
+                description: req.body.adventure.description,
+                cost: req.body.adventure.cost,
+                location: location,
+                lat: lat,
+                lng: lng
+            };
+
+        Adventure.findByIdAndUpdate(req.params.id, { $set: newData }, function(err, updatedAdventure) {
+            if (err) {
+                req.flash('error', err.message);
+                res.redirect('/adventures');
+            } else {
+                req.flash('success', 'Successfully Updated!');
+                res.redirect('/adventures/' + req.params.id);
+            }
+        });    
+    });
 });
 
 //DESTROY ADVENTURE ROUTE

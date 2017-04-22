@@ -5,11 +5,11 @@ var adventureSchema = new mongoose.Schema({
     name: String,
     image: String,
     description: String,
+    cost: String,
     location: String,
     lat: Number,
     lng: Number,
     createdAt: { type: Date, default: Date.now },
-    price: String,
     author: {
         id: {
             type: mongoose.Schema.Types.ObjectId,
