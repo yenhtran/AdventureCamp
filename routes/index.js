@@ -39,7 +39,9 @@ router.get('/login', function(req, res) {
 router.post('/login', passport.authenticate('local', 
     {   
         successRedirect: '/adventures',
-        failureRedirect: '/login'
+        failureRedirect: '/login',
+        failureFlash: true,
+        successFlash: 'Welcome to LivinAdventures'
     }), function(req, res) {
         
 });
