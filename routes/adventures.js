@@ -4,16 +4,33 @@ var express = require('express'),
     Comment = require('../models/comment'),
     middleware = require('../middleware'),
     geocoder = require('geocoder');
+    
+function escapeRegex(text) {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+}
 
 //INDEX - show all adventures
 router.get('/', function(req, res) {
-    Adventure.find({}, function(err, alladventures) {
-        if (err) {
-            console.log(err);
-        } else {
-            res.render('adventures/index', { adventures: alladventures, page: 'adventures' });
-        }
-    });
+    
+    if (req.query.search) {
+        const regex = new RegExp(escapeRegex(req.query.search), 'gi');
+        
+        Adventure.find({name: regex}, function(err, foundAdventure) {
+            if (err) {
+                console.log(err);
+            } else {
+                res.status(200).json(foundAdventure);
+            }
+        });
+    } else {
+        Adventure.find({}, function(err, alladventures) {
+            if (err) {
+                console.log(err);
+            } else {
+                res.render('adventures/index', { adventures: alladventures, page: 'adventures' });
+            }
+        });
+    }
 });
 
 //CREATE - add new adventure to DB

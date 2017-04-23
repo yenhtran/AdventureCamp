@@ -38,3 +38,8 @@ body {
     height: 400px;
     width: 100%;
 }
+
+.flex-wrap {
+    display: flex;
+    flex-wrap: wrap;
+}

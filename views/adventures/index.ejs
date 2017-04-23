@@ -5,10 +5,17 @@
         <div class='container'>
             <h1>Welcome to LivinAdventures!</h1>
             <p><a class='btn btn-primary btn-large' href='/adventures/new'>Add New Adventure</a></p>
+            <p>
+                <form action='/adventures' method='GET' class='form-inline' id='adventure-search'>
+                    <div class='form-group'>
+                        <input type='text' name='search' placeholder='Adventure search...' class='form-control'>
+                    </div>
+                </form>
+            </p>
         </div>
     </header>
     
-    <div class='row text-center' style='display:flex; flex-wrap: wrap'>
+    <div class='row text-center flex-wrap' id='adventure-grid'>
         <% adventures.forEach(function(adventure){ %>
             <div class='col-md-3 col-sm-6'>
                 <div class='thumbnail'>
