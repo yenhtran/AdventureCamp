@@ -108,6 +108,7 @@ h4 {
 }
 
 #adventureNavBar {
+    border: none;
     border-color: none;
     margin-bottom: 0;
 }
